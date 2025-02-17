@@ -124,7 +124,7 @@ jobs:
 
     - name: 加载自定义 feeds
       env:
-        FEEDS_CONF_PATH: ${{ matrix.ARCHITECTURE }}/${{ env.FEEDS_CONF }}
+        FEEDS_CONF_PATH: iStoreOS/${{ matrix.ARCHITECTURE }}/${{ env.FEEDS_CONF }}
       run: |
         [ -e $FEEDS_CONF_PATH ] && mv $FEEDS_CONF_PATH openwrt/$FEEDS_CONF
         chmod +x $DIY_P1_SH
