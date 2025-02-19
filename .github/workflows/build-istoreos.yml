@@ -7,7 +7,7 @@ on:
       repo_branch:
         description: 'iStoreOS 仓库分支'
         required: true
-        default: 'v22.03.7'
+        default: 'istoreos-22.03'
       lan_ip:
         description: '设置LAN IP地址'
         required: true
