@@ -56,7 +56,7 @@ jobs:
       uses: actions/checkout@main
 
     - name: Setup SSH tunnel
-      if: ${{ matrix.use_ngrok == 'true' }}
+      if: ${{ matrix.use_ngrok == true }}
       uses: qiaodapei/github-ngrok-ssh@main
       with:
         timeout: 6h
