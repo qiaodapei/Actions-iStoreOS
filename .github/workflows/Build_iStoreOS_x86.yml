@@ -47,8 +47,9 @@ jobs:
     strategy:
       matrix:
         target: [x86]  # 使用矩阵来并行化构建不同的目标
-        use_ngrok:
-          - true
+        include:
+          - target: x86
+            use_ngrok: false
 
     steps:
     - name: 准备完成
