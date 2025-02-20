@@ -50,7 +50,6 @@ jobs:
           - x86
         use_ngrok:
           - true
-          - false
 
     steps:
     - name: 准备完成
