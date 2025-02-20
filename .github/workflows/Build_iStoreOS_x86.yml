@@ -49,7 +49,7 @@ jobs:
         target: [x86]  # 使用矩阵来并行化构建不同的目标
         include:
           - target: x86
-            use_ngrok: false
+            use_ngrok: true
 
     steps:
     - name: 准备完成
