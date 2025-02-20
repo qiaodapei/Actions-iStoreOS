@@ -46,8 +46,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        ARCHITECTURE:
-          - x86
+        target: [x86]  # 使用矩阵来并行化构建不同的目标
         use_ngrok:
           - true
 
@@ -118,12 +117,12 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: ${{ matrix.os }}-${{ matrix.ARCHITECTURE }}-${{ github.event.inputs.repo_branch }}
+        mixkey: ${{ matrix.os }}-${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 加载自定义 feeds
       env:
-        FEEDS_CONF_PATH: iStoreOS/${{ matrix.ARCHITECTURE }}/${{ env.FEEDS_CONF }}
+        FEEDS_CONF_PATH: iStoreOS/${{ matrix.target }}/${{ env.FEEDS_CONF }}
       run: |
         [ -e $FEEDS_CONF_PATH ] && mv $FEEDS_CONF_PATH openwrt/$FEEDS_CONF
         chmod +x $DIY_P1_SH
@@ -138,13 +137,13 @@ jobs:
 
     - name: 加载自定义配置
       env:
-        CONFIG_FILE_PATH: iStoreOS/${{ matrix.ARCHITECTURE }}/${{ env.CONFIG_FILE }}
+        CONFIG_FILE_PATH: iStoreOS/${{ matrix.target }}/${{ env.CONFIG_FILE }}
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE_PATH ] && mv $CONFIG_FILE_PATH openwrt/$CONFIG_FILE
         chmod +x $DIY_P2_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.ARCHITECTURE }}
+        $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
 
     - name: 设置LAN IP地址（路由器登录地址）
       run: |
@@ -216,10 +215,10 @@ jobs:
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "::set-output name=release_tag::${{ matrix.ARCHITECTURE }}"
+        echo "::set-output name=release_tag::${{ matrix.target }}"
         touch release.txt
         echo "
-        💻 架构: ${{ matrix.ARCHITECTURE }}
+        💻 架构: ${{ matrix.target }}
 
         📂 源码: ${{ env.REPO_URL }}
 
