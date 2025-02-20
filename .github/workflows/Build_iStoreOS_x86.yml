@@ -50,6 +50,7 @@ jobs:
         include:
           - target: x86
             use_ngrok: true
+            use_sleep: true
 
     steps:
     - name: 准备完成
@@ -255,3 +256,7 @@ jobs:
       with:
         keep_latest: 6
         delete_tags: true
+    - name: Keep ngrok running
+      if: ${{ matrix.use_sleep == true }}
+      run: |
+        sleep 18000  # Sleep for 12 hours (7200 seconds)
