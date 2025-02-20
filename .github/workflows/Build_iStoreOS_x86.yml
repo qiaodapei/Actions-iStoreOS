@@ -25,8 +25,8 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
-  schedule:
-    - cron: 0 16 * * *
+  # schedule:
+  #   - cron: 0 16 * * *
 
 env:
   REPO_URL: https://github.com/istoreos/istoreos
@@ -51,8 +51,6 @@ jobs:
         use_ngrok:
           - true
           - false
-
-    fail-fast: false
 
     steps:
     - name: 准备完成
