@@ -187,6 +187,8 @@ if [ "$1" = "rk33xx" ]; then
     $GITHUB_WORKSPACE/scripts/istoreos/preset-clash-core.sh arm64
 elif [ "$1" = "rk35xx" ]; then
     $GITHUB_WORKSPACE/scripts/istoreos/preset-clash-core.sh arm64
+elif [ "$1" = "n1" ]; then
+    $GITHUB_WORKSPACE/scripts/istoreos/preset-clash-core.sh arm64
 elif [ "$1" = "x86" ]; then
     $GITHUB_WORKSPACE/scripts/istoreos/preset-clash-core.sh amd64
 fi
