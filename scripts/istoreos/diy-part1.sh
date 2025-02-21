@@ -29,6 +29,6 @@ echo $date_version > version
 # 为iStoreOS固件版本加上编译作者
 author="qiaodapei"
 sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V ${date_version} by ${author}'/g" package/base-files/files/etc/openwrt_release
-sed -i "s/BUILD_ID.*/BUILD_ID=\"%D %V ${date_version} \"/g" package/base-files/files/usr/lib/os-release
+sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
 # sed -i "s/OPENWRT_RELEASE.*/OPENWRT_RELEASE=\"%D %V ${date_version} by ${author}\"/g" package/base-files/files/usr/lib/os-release
 
