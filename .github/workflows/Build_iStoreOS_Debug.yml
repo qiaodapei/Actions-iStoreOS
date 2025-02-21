@@ -51,9 +51,9 @@ jobs:
           - target: x86 
             use_ngrok: true
           - target: rk33xx
-            use_ngrok: true 
+            use_ngrok: false 
           - target: rk35xx
-            use_ngrok: true 
+            use_ngrok: false 
 
     steps:
     - name: 准备完成
