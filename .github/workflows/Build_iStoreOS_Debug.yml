@@ -47,14 +47,20 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-22.04'] # 可以添加更多操作系统
-        target: [x86, rk35xx, rk33xx] # 使用矩阵来并行化构建不同的目标 
+        target: [x86, n1, rk35xx, rk33xx] # 使用矩阵来并行化构建不同的目标 
         include:
-          - target: x86 
+          - target: n1
             use_ngrok: true
+            use_sleep: false
+          - target: x86 
+            use_ngrok: false
+            use_sleep: false
           - target: rk33xx
             use_ngrok: false 
+            use_sleep: false
           - target: rk35xx
-            use_ngrok: false 
+            use_ngrok: false
+            use_sleep: false 
 
     steps:
     - name: 准备完成
@@ -264,3 +270,8 @@ jobs:
       with:
         keep_latest: 6
         delete_tags: true
+    - name: Keep ngrok running
+      if: ${{ matrix.use_sleep == true }}
+      run: |
+        sleep 43200  # Sleep for 12 hours (7200 seconds)
+        pkill ngrok  # Kill the ngrok process after 12 hours
