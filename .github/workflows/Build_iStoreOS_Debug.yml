@@ -95,7 +95,11 @@ jobs:
         echo "------------------------------- 更新并安装依赖 -------------------------------"
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install $(cat $GITHUB_WORKSPACE/depends/${{ matrix.os }})
+        DEPENDS_FILE="$GITHUB_WORKSPACE/depends/${{ matrix.os }}"
+        if [ -f "$DEPENDS_FILE" ]; then
+          echo "正在从 $DEPENDS_FILE 读取依赖..."
+          sudo -E apt-get -qq install $(cat "$DEPENDS_FILE")
+        fi
         wget https://bootstrap.pypa.io/pip/3.6/get-pip.py
         sudo python3 get-pip.py
         sudo rm -rf get-pip.py
