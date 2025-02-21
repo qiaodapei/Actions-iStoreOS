@@ -150,6 +150,7 @@ jobs:
         echo "Running DIY script with target: ${{ matrix.target }}"
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
+        echo "out: $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}"
 
     - name: 设置LAN IP地址（路由器登录地址）
       run: |
