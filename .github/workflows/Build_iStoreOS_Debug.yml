@@ -43,9 +43,10 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: ['ubuntu-22.04'] # 可以添加更多操作系统
         target: [x86, rk35xx, rk33xx] # 使用矩阵来并行化构建不同的目标 
         include:
           - target: x86 
@@ -94,7 +95,7 @@ jobs:
         echo "------------------------------- 更新并安装依赖 -------------------------------"
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /etc/mysql /etc/php /usr/local/lib/android /opt/ghc
         sudo -E apt-get -qq update
-        sudo -E apt-get -qq install $(cat $GITHUB_WORKSPACE/depends/${{ matrix.target }})
+        sudo -E apt-get -qq install $(cat $GITHUB_WORKSPACE/depends/${{ matrix.os }})
         wget https://bootstrap.pypa.io/pip/3.6/get-pip.py
         sudo python3 get-pip.py
         sudo rm -rf get-pip.py
@@ -146,13 +147,10 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE_PATH ] && mv $CONFIG_FILE_PATH openwrt/$CONFIG_FILE
-        echo "$CONFIG_FILE_PATH"
         cat openwrt/$CONFIG_FILE
         chmod +x $DIY_P2_SH
-        echo "Running DIY script with target: ${{ matrix.target }}"
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
-        echo "out: $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}"
 
     - name: 设置LAN IP地址（路由器登录地址）
       run: |
