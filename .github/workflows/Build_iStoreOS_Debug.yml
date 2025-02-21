@@ -1,4 +1,4 @@
-name: Build iStore OS (x86)
+name: Build iStore OS
 
 on:
   repository_dispatch:
@@ -25,8 +25,8 @@ on:
         description: 'SSH connection to Actions'
         required: false
         default: 'false'
-  # schedule:
-  #   - cron: 0 16 * * *
+  schedule:
+   - cron: 0 16 * * *
 
 env:
   REPO_URL: https://github.com/istoreos/istoreos
@@ -46,11 +46,14 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        target: [x86]  # 使用矩阵来并行化构建不同的目标
+        target: [x86, rk35xx, rk33xx] # 使用矩阵来并行化构建不同的目标 
         include:
-          - target: x86
+          - target: x86 
             use_ngrok: true
-            use_sleep: true
+          - target: rk33xx
+            use_ngrok: true 
+          - target: rk35xx
+            use_ngrok: true 
 
     steps:
     - name: 准备完成
@@ -68,14 +71,14 @@ jobs:
       run: |
         echo "若分配的服务器性能不足，务必及时取消，重新运行！"
         echo -e "------------------------------- CPU信息 -------------------------------\n"
-        echo "CPU物理数量:$(cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l)"
+        echo "CPU物理数量:$(cat /proc/cpuinfo| grep 'physical id'| sort| uniq| wc -l)"
         echo -e "CPU核心及版本信息: $(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c) \n"
         echo -e "------------------------------- 内存信息 -------------------------------\n"
         echo "已安装内存详细信息: "
         sudo lshw -short -C memory | grep GiB
         echo -e "\n"
         echo -e "------------------------------- 磁盘信息 -------------------------------\n"
-        echo -e "磁盘数量: $(ls /dev/sd* | grep -v [1-9] | wc -l) \n"
+        echo -e "磁盘数量: $(ls /dev/sd* | grep -v '[1-9]' | wc -l) \n"
         echo "------------------------------- 磁盘详情 -------------------------------\n"
         df -Th
 
@@ -97,7 +100,7 @@ jobs:
         sudo rm -rf get-pip.py
         sudo pip install pyelftools
         echo "------------------------------- 清理Docker镜像和软件 -------------------------------"
-        docker rmi `docker images -q`
+        docker rmi $(docker images -q)
         docker image prune -a -f
         sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* adoptopenjdk* mysql* php* mongodb* dotnet* moby* snapd* android* || true
         sudo -E apt-get -qq autoremove --purge
@@ -112,14 +115,14 @@ jobs:
       run: |
         df -hT $PWD
         REPO_BRANCH=${{ github.event.inputs.repo_branch }}
-        git clone $REPO_URL -b $REPO_BRANCH  openwrt
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 缓存构建动作
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        mixkey: ${{ matrix.os }}-${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
+        mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
         prefix: ${{ github.workspace }}/openwrt
 
     - name: 加载自定义 feeds
@@ -151,7 +154,6 @@ jobs:
       run: |
         cd openwrt
         SET_IP=${{ github.event.inputs.lan_ip }}
-        #修改默认IP地址
         sed -i "s/192\.168\.[0-9]*\.[0-9]*/$SET_IP/g" package/base-files/files/bin/config_generate
         echo "Set LAN IP Address: $SET_IP"
 
@@ -256,7 +258,3 @@ jobs:
       with:
         keep_latest: 6
         delete_tags: true
-    - name: Keep ngrok running
-      if: ${{ matrix.use_sleep == true }}
-      run: |
-        sleep 18000  # Sleep for 12 hours (7200 seconds)
