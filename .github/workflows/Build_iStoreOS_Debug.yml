@@ -207,15 +207,11 @@ jobs:
           echo "::error::❌ 配置文件 $CONFIG_FILE 不存在"
           exit 1
         fi
-        
         SET_IP="${{ github.event.inputs.lan_ip }}"
-        
-        # 改进sed匹配模式：兼容任意原IP地址格式
-        if ! sed -i -E "s/(ipad=\$\{ipaddr:-\")[0-9.]+/\1$SET_IP/g" "$CONFIG_FILE"; then
+        if ! sed -i "s/192\.168\.[0-9]*\.[0-9]*/$SET_IP/g" "$CONFIG_FILE"; then
           echo "::error::❌ IP地址替换失败"
           exit 1
         fi
-        
         # 修正grep检查模式：匹配实际变量名 ipad
         if ! grep -q "ipad=.*$SET_IP" "$CONFIG_FILE"; then
           echo "::error::❌ IP地址设置未生效，检查替换后内容："
