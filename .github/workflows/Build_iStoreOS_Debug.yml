@@ -216,16 +216,9 @@ jobs:
         
         if ! grep -q "lan.ipaddr=$SET_IP" "$CONFIG_FILE"; then
           echo "::error::❌ IP地址设置未生效，当前配置内容："
-          cat "$CONFIG_FILE" | head -n 50
+          cat "$CONFIG_FILE" | head -n 500
           exit 1
         fi
-
-    - name: 设置系统名称
-      run: |
-        cd openwrt
-        set_os_name="${{ github.event.inputs.os_name }}"
-        sed -i "s/OpenWrt/${set_os_name}/g" package/base-files/files/bin/config_generate
-        echo "Set OS name : ${set_os_name}"
 
     - name: 设置系统名称
       run: |
