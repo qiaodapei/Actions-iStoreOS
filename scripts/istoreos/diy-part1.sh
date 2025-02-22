@@ -22,13 +22,13 @@
 # echo 'src-git mosdns https://github.com/sbwml/luci-app-mosdns' >>feeds.conf.default
 # echo 'src-git kiddin9 https://github.com/kiddin9/kwrt-packages' >>feeds.conf
 
-# 修改版本为编译日期，数字类型。
-date_version=$(date +"%Y%m%d%H")
-echo $date_version > version
+# # 修改版本为编译日期，数字类型。
+# date_version=$(date +"%Y%m%d%H")
+# echo $date_version > version
 
-# 为iStoreOS固件版本加上编译作者
-author="qiaodapei"
-sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V ${date_version} by ${author}'/g" package/base-files/files/etc/openwrt_release
-sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
-# sed -i "s/OPENWRT_RELEASE.*/OPENWRT_RELEASE=\"%D %V ${date_version} by ${author}\"/g" package/base-files/files/usr/lib/os-release
+# # 为iStoreOS固件版本加上编译作者
+# author="qiaodapei"
+# sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V ${date_version} by ${author}'/g" package/base-files/files/etc/openwrt_release
+# sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
+# # sed -i "s/OPENWRT_RELEASE.*/OPENWRT_RELEASE=\"%D %V ${date_version} by ${author}\"/g" package/base-files/files/usr/lib/os-release
 
