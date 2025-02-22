@@ -45,6 +45,7 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false  # 允许其他架构继续构建
       matrix:
         os: ['ubuntu-22.04'] # 可以添加更多操作系统
         target: [x86, n1, rk35xx, rk33xx] # 使用矩阵来并行化构建不同的目标 
