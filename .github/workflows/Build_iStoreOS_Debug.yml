@@ -66,7 +66,31 @@ jobs:
     steps:
     - name: 准备完成
       uses: actions/checkout@v4
-
+    - name: 验证输入参数
+      run: |
+        echo "开始验证输入参数..."
+        echo "验证仓库分支是否存在..."
+        if ! git ls-remote --exit-code --heads $REPO_URL refs/heads/${{ github.event.inputs.repo_branch }}; then
+          echo "::error::❌ 错误：分支 '${{ github.event.inputs.repo_branch }}' 不存在于仓库中！"
+          exit 1
+        fi
+        echo "验证LAN IP地址格式：${{ github.event.inputs.lan_ip }}"
+        LAN_IP="${{ github.event.inputs.lan_ip }}"
+        if ! echo "$LAN_IP" | grep -Eq '^([0-9]{1,3}\.){3}[0-9]{1,3}$'; then
+          echo "::error::❌ 错误：IP地址格式无效 '$LAN_IP'，必须为 IPv4 格式（如 192.168.1.1）"
+          exit 1
+        fi
+        IFS='.' read -ra OCTETS <<< "$LAN_IP"
+        for OCTET in "${OCTETS[@]}"; do
+          if [[ $OCTET -lt 0 || $OCTET -gt 255 ]]; then
+            echo "::error::❌ 错误：IP地址 '$LAN_IP' 包含无效数字（必须 0-255）"
+            exit 1
+          fi
+        done
+        if [[ ! $LAN_IP =~ ^(192\.168|10\.|172\.(1[6-9]|2[0-9]|3[0-1])) ]]; then
+          echo "::warning::⚠️ 注意：LAN IP '$LAN_IP' 不是标准内网地址（建议使用 192.168.x.x/10.x.x.x/172.16-31.x.x）"
+        fi
+        
     - name: Setup SSH tunnel
       if: ${{ matrix.use_ngrok == true }}
       uses: qiaodapei/github-ngrok-ssh@main
@@ -127,7 +151,19 @@ jobs:
       run: |
         df -hT $PWD
         REPO_BRANCH=${{ github.event.inputs.repo_branch }}
-        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        git clone $REPO_URL -b $REPO_BRANCH openwrt || {
+          echo "::error::❌ 仓库克隆失败，请检查网络连接或仓库权限";
+          exit 1;
+        }
+        if [ ! -d "openwrt/.git" ]; then
+          echo "::error::❌ 错误：仓库克隆不完整，缺少.git目录"
+          exit 1
+        fi
+        cd openwrt
+        git checkout $REPO_BRANCH || {
+          echo "::error::❌ 无法切换到指定分支 '$REPO_BRANCH'";
+          exit 1;
+        }
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 缓存构建动作
@@ -196,14 +232,30 @@ jobs:
       if: github.event.inputs.enable_wifi == 'true'
       run: |
         cd openwrt
-        sed -i 's/disabled=1/disabled=0/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+        WIFI_FILE="package/kernel/mac80211/files/lib/wifi/mac80211.sh"
+        if [ ! -f "$WIFI_FILE" ]; then
+          echo "::error::❌ 错误：无线配置文件 $WIFI_FILE 不存在"
+          exit 1
+        fi
+        
+        sed -i 's/disabled=1/disabled=0/g' $WIFI_FILE || {
+          echo "::error::❌ 无线配置修改失败";
+          exit 1;
+        }
 
     - name: 下载软件包
       id: package
       run: |
         cd openwrt
+        if [ ! -f "$CONFIG_FILE" ]; then
+          echo "::error::❌ 错误：配置文件 $CONFIG_FILE 不存在"
+          exit 1
+        fi
         make defconfig
-        make download -j8
+        make download -j8 || {
+          echo "::error::❌ 软件包下载失败";
+          exit 1;
+        }
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
@@ -211,13 +263,16 @@ jobs:
       id: compile
       run: |
         cd openwrt
-        echo -e "$(nproc) thread compile"
+        echo "使用 $(nproc) 线程进行编译..."
         echo "FILE_DATE=$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        set +e  # 禁用自动失败
+        set +eo pipefail
         make -j$(nproc) || {
-          echo "::warning::第一次编译失败，尝试单线程编译";
+          echo "::warning::⚠️ 并行编译失败，尝试单线程编译...";
           make -j1 || {
-            echo "::error::编译失败";
+            echo "::error::❌ 严重错误：编译最终失败，请检查以下可能原因：
+            1. 软件包依赖不满足
+            2. 配置文件存在冲突
+            3. 系统资源不足";
             exit 1;
           }
         }
