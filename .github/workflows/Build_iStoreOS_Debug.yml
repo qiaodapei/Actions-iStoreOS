@@ -201,10 +201,24 @@ jobs:
 
     - name: 设置LAN IP地址（路由器登录地址）
       run: |
-        cd openwrt
-        SET_IP=${{ github.event.inputs.lan_ip }}
-        sed -i "s/192\.168\.[0-9]*\.[0-9]*/$SET_IP/g" package/base-files/files/bin/config_generate
-        echo "Set LAN IP Address: $SET_IP"
+        cd openwrt || exit 1
+        CONFIG_FILE="package/base-files/files/bin/config_generate"
+        if [ ! -f "$CONFIG_FILE" ]; then
+          echo "::error::❌ 配置文件 $CONFIG_FILE 不存在"
+          exit 1
+        fi
+        
+        SET_IP="${{ github.event.inputs.lan_ip }}"
+        if ! sed -i "s/192\.168\.[0-9]*\.[0-9]*/$SET_IP/g" "$CONFIG_FILE"; then
+          echo "::error::❌ IP地址替换失败，请检查sed版本或文件权限"
+          exit 1
+        fi
+        
+        if ! grep -q "lan.ipaddr=$SET_IP" "$CONFIG_FILE"; then
+          echo "::error::❌ IP地址设置未生效，当前配置内容："
+          cat "$CONFIG_FILE" | head -n 50
+          exit 1
+        fi
 
     - name: 设置系统名称
       run: |
@@ -212,6 +226,21 @@ jobs:
         set_os_name="${{ github.event.inputs.os_name }}"
         sed -i "s/OpenWrt/${set_os_name}/g" package/base-files/files/bin/config_generate
         echo "Set OS name : ${set_os_name}"
+
+    - name: 设置系统名称
+      run: |
+        cd openwrt
+        set_os_name="${{ github.event.inputs.os_name }}"
+        # 添加防空校验
+        if [ -z "$set_os_name" ]; then
+          echo "::error::❌ 系统名称不能为空"
+          exit 1
+        fi
+        sed -i "s/OpenWrt/${set_os_name}/g" package/base-files/files/bin/config_generate || {
+          echo "::error::❌ 系统名称替换失败"
+          exit 1
+        }
+    
     - name: 修改固件名称
       run: |
         cd openwrt
