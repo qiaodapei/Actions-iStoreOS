@@ -64,7 +64,7 @@ jobs:
 
     steps:
     - name: 准备完成
-      uses: actions/checkout@main
+      uses: actions/checkout@v4
 
     - name: Setup SSH tunnel
       if: ${{ matrix.use_ngrok == true }}
