@@ -240,6 +240,9 @@ jobs:
         VERSION_NUMBER=$(awk -F '[ ,]' '/VERSION_NUMBER:=/ {for(i=1; i<=NF; i++) {if ($i ~ /[0-9]+\.[0-9]+\.[0-9]+/) {gsub(/[^0-9.]/, "", $i); print $i; exit}}}' include/version.mk)
         # 生成日期版本
         date_version=$(date +"%Y%m%d%H")
+        # 注入版本信息
+        echo "CONFIG_VERSIONOPT=y" >> .config
+        echo "CONFIG_VERSION_CODE=\"$date_version\"" >> .config
         # 1. 修改 IMG_PREFIX 为 istoreos
         # sed -i "s|IMG_PREFIX?=.*|IMG_PREFIX?=istoreos-\$(REVISION)|" include/image.mk
         # 2. 调整 DEVICE_IMG_PREFIX 附加版本和日期
@@ -247,7 +250,7 @@ jobs:
         # 后续操作（修改描述等）
         author="Loki"
         sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by ${author}'/g" package/base-files/files/etc/openwrt_release
-        sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
+        # sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
 
     - name: 启用WiFi
       if: github.event.inputs.enable_wifi == 'true'
