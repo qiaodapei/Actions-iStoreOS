@@ -233,58 +233,21 @@ jobs:
           exit 1
         }
     
-    # - name: 修改固件名称
-    #   run: |
-    #     cd openwrt
-    #     # 提取主版本号
-    #     VERSION_NUMBER=$(awk -F '[ ,]' '/VERSION_NUMBER:=/ {for(i=1; i<=NF; i++) {if ($i ~ /[0-9]+\.[0-9]+\.[0-9]+/) {gsub(/[^0-9.]/, "", $i); print $i; exit}}}' include/version.mk)
-    #     # 生成日期版本
-    #     date_version=$(date +"%Y%m%d%H")
-    #     # 1. 修改 IMG_PREFIX 为 istoreos
-    #     # sed -i "s|IMG_PREFIX?=.*|IMG_PREFIX?=istoreos-\$(REVISION)|" include/image.mk
-    #     # 2. 调整 DEVICE_IMG_PREFIX 附加版本和日期
-    #     sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${date_version}-\$(1)|" include/image.mk
-    #     # 修改版本号为日期
-    #     cat << EOF > config_snippet
-    #     CONFIG_VERSIONOPT=y
-    #     CONFIG_VERSION_CODE=${date_version}
-    #     EOF
-    #     ./scripts/kconfig.pl /dev/null config_snippet >> .config
-    #     # 后续操作（修改描述等）
-    #     author="Loki"
-    #     sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by ${author}'/g" package/base-files/files/etc/openwrt_release
-    #     # sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
     - name: 修改固件名称
       run: |
         cd openwrt
-        # 生成日期版本（上海时区）
-        date_version=$(TZ=Asia/Shanghai date +"%Y%m%d%H")
-        # 步骤 1：生成基础配置
-        make defconfig
-        # 步骤 2：创建符合 Kconfig 规范的配置片段
-        cat << EOF > config_snippet
-        CONFIG_VERSIONOPT=y
-        CONFIG_VERSION_DIST=""
-        CONFIG_VERSION_NUMBER=""
-        CONFIG_VERSION_CODE="$date_version"
-        EOF
-        # 步骤 3：调试输出片段内容
-        echo "=== config_snippet 内容 ==="
-        cat config_snippet
-        # 步骤 4：正确合并配置（关键修复点）
-        # ./scripts/kconfig.pl .config config_snippet > .config.merged
-        # mv .config.merged .config
-        # rm config_snippet
-        # 步骤 5：验证配置合并
-        # echo "检查合并后的配置："
-        # grep "CONFIG_VERSION_CODE" .config
         # 提取主版本号
         VERSION_NUMBER=$(awk -F '[ ,]' '/VERSION_NUMBER:=/ {for(i=1; i<=NF; i++) {if ($i ~ /[0-9]+\.[0-9]+\.[0-9]+/) {gsub(/[^0-9.]/, "", $i); print $i; exit}}}' include/version.mk)
-        # 调整 DEVICE_IMG_PREFIX 附加版本和日期
+        # 生成日期版本
+        date_version=$(date +"%Y%m%d%H")
+        # 1. 修改 IMG_PREFIX 为 istoreos
+        # sed -i "s|IMG_PREFIX?=.*|IMG_PREFIX?=istoreos-\$(REVISION)|" include/image.mk
+        # 2. 调整 DEVICE_IMG_PREFIX 附加版本和日期
         sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${date_version}-\$(1)|" include/image.mk
-        # 修改描述新增作者
+        # 后续操作（修改描述等）
         author="Loki"
         sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by ${author}'/g" package/base-files/files/etc/openwrt_release
+        sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
 
     - name: 启用WiFi
       if: github.event.inputs.enable_wifi == 'true'
