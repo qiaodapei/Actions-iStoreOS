@@ -272,9 +272,9 @@ jobs:
         echo "=== config_snippet 内容 ==="
         cat config_snippet
         # 步骤 4：正确合并配置（关键修复点）
-        ./scripts/kconfig.pl .config config_snippet > .config.merged
-        mv .config.merged .config
-        rm config_snippet
+        # ./scripts/kconfig.pl .config config_snippet > .config.merged
+        # mv .config.merged .config
+        # rm config_snippet
         # 步骤 5：验证配置合并
         echo "检查合并后的配置："
         grep "CONFIG_VERSION_CODE" .config
