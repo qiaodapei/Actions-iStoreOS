@@ -264,6 +264,8 @@ jobs:
         # 步骤 2：创建符合 Kconfig 规范的配置片段
         cat << EOF > config_snippet
         CONFIG_VERSIONOPT=y
+        CONFIG_VERSION_DIST=""
+        CONFIG_VERSION_NUMBER=""
         CONFIG_VERSION_CODE="$date_version"
         EOF
         # 步骤 3：调试输出片段内容
