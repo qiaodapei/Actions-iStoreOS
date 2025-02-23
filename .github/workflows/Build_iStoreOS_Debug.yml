@@ -264,15 +264,16 @@ jobs:
         # 步骤 2：创建符合 Kconfig 规范的配置片段
         cat << EOF > config_snippet
         CONFIG_VERSIONOPT=y
-        # CONFIG_VERSION_DIST="iStoreOS"
-        # CONFIG_VERSION_NUMBER="22.03.7"
         CONFIG_VERSION_CODE="$date_version"
         EOF
-        # 步骤 3：正确合并配置（关键修复点）
+        # 步骤 3：调试输出片段内容
+        echo "=== config_snippet 内容 ==="
+        cat config_snippet
+        # 步骤 4：正确合并配置（关键修复点）
         ./scripts/kconfig.pl .config config_snippet > .config.merged
         mv .config.merged .config
         rm config_snippet
-        # 步骤 4：验证配置合并
+        # 步骤 5：验证配置合并
         echo "检查合并后的配置："
         grep "CONFIG_VERSION_CODE" .config
         # 提取主版本号
