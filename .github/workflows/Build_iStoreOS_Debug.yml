@@ -276,8 +276,8 @@ jobs:
         # mv .config.merged .config
         # rm config_snippet
         # 步骤 5：验证配置合并
-        echo "检查合并后的配置："
-        grep "CONFIG_VERSION_CODE" .config
+        # echo "检查合并后的配置："
+        # grep "CONFIG_VERSION_CODE" .config
         # 提取主版本号
         VERSION_NUMBER=$(awk -F '[ ,]' '/VERSION_NUMBER:=/ {for(i=1; i<=NF; i++) {if ($i ~ /[0-9]+\.[0-9]+\.[0-9]+/) {gsub(/[^0-9.]/, "", $i); print $i; exit}}}' include/version.mk)
         # 调整 DEVICE_IMG_PREFIX 附加版本和日期
