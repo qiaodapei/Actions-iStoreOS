@@ -235,58 +235,87 @@ jobs:
     - name: 修改固件名称
       run: |
         cd openwrt
+        # 提取主版本号
+        VERSION_NUMBER=$(awk -F '[ ,]' '/VERSION_NUMBER:=/ {for(i=1; i<=NF; i++) {if ($i ~ /[0-9]+\.[0-9]+\.[0-9]+/) {gsub(/[^0-9.]/, "", $i); print $i; exit}}}' include/version.mk)
         # 生成日期版本
         date_version=$(date +"%Y%m%d%H")
-        
-        # 修改 include/version.mk
-        VERSION_MK="include/version.mk"
-        if [ ! -f "$VERSION_MK" ]; then
-          echo "::error::❌ 错误：version.mk 文件不存在"
+        # 修改 toplevel.mk 中的 REVISION 定义
+        TOPLEVEL_MK="include/toplevel.mk"
+        if [ ! -f "$TOPLEVEL_MK" ]; then
+          echo "::error::❌ 错误：toplevel.mk 文件不存在"
           exit 1
         fi
-        # 取消注释并设置 REVISION
-        sed -i "s/^# REVISION:=.*/REVISION:= ${date_version}/g" "$VERSION_MK" || {
-          echo "::error::❌ 设置 REVISION 失败"
+        sed -i "s|REVISION:=\$(shell \$(TOPDIR)/scripts/getver.sh)|REVISION:=${date_version}|g" "$TOPLEVEL_MK" || {
+          echo "::error::❌ 替换 toplevel.mk 中的 REVISION 失败"
           exit 1
         }
-        # # 替换所有 $(REVISION) 引用
-        # sed -i "s/\$(REVISION)/\${date_version}/g" "$VERSION_MK" || {
-        #   echo "::error::❌ 替换 REVISION 引用失败"
-        #   exit 1
-        # }
-        
-        # 修改 image-config.in
-        IMAGE_CONFIG="package/base-files/image-config.in"
-        if [ ! -f "$IMAGE_CONFIG" ]; then
-          echo "::error::❌ 错误：image-config.in 文件不存在"
+        # 验证替换结果
+        if ! grep -q "REVISION:=${date_version}" "$TOPLEVEL_MK"; then
+          echo "::error::❌ toplevel.mk 中的 REVISION 替换未生效"
           exit 1
         fi
-        # 禁用版本代码文件名
-        sed -i '/config VERSION_CODE_FILENAMES/,/default y/ s/default y/default n/' "$IMAGE_CONFIG" || {
-          echo "::error::❌ 修改 VERSION_CODE_FILENAMES 失败"
-          exit 1
-        }
-        
-        # # 提取主版本号
-        # VERSION_NUMBER=$(awk -F '[ ,]' '/VERSION_NUMBER:=/ {for(i=1; i<=NF; i++) {if ($i ~ /[0-9]+\.[0-9]+\.[0-9]+/) {gsub(/[^0-9.]/, "", $i); print $i; exit}}}' "$VERSION_MK")
-        
-        # # 调整固件命名规则
-        # IMAGE_MK="include/image.mk"
-        # sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${date_version}-\$(1)|" "$IMAGE_MK" || {
-        #   echo "::error::❌ 修改固件前缀失败"
-        #   exit 1
-        # }
-        
-        # 修改系统描述信息
+        # 调整 DEVICE_IMG_PREFIX 附加版本和日期
+        sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${date_version}-\$(1)|" include/image.mk
+        # 后续操作（修改描述等）
         author="Loki"
         sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by ${author}'/g" package/base-files/files/etc/openwrt_release
-        # sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
+
+      
+    # - name: 修改固件名称
+    #   run: |
+    #     cd openwrt
+    #     # 生成日期版本
+    #     date_version=$(date +"%Y%m%d%H")
         
-        # 验证修改结果
-        echo "=== version.mk 修改结果 ==="
-        grep -E 'REVISION:=|VERSION_CODE:=' "$VERSION_MK"
-        echo "=== image-config.in 修改结果 ==="
-        grep -A3 'config VERSION_CODE_FILENAMES' "$IMAGE_CONFIG"
+    #     # 修改 include/version.mk
+    #     VERSION_MK="include/version.mk"
+    #     if [ ! -f "$VERSION_MK" ]; then
+    #       echo "::error::❌ 错误：version.mk 文件不存在"
+    #       exit 1
+    #     fi
+    #     # 取消注释并设置 REVISION
+    #     sed -i "s/^# REVISION:=.*/REVISION:= ${date_version}/g" "$VERSION_MK" || {
+    #       echo "::error::❌ 设置 REVISION 失败"
+    #       exit 1
+    #     }
+    #     # # 替换所有 $(REVISION) 引用
+    #     # sed -i "s/\$(REVISION)/\${date_version}/g" "$VERSION_MK" || {
+    #     #   echo "::error::❌ 替换 REVISION 引用失败"
+    #     #   exit 1
+    #     # }
+        
+    #     # 修改 image-config.in
+    #     IMAGE_CONFIG="package/base-files/image-config.in"
+    #     if [ ! -f "$IMAGE_CONFIG" ]; then
+    #       echo "::error::❌ 错误：image-config.in 文件不存在"
+    #       exit 1
+    #     fi
+    #     # 禁用版本代码文件名
+    #     sed -i '/config VERSION_CODE_FILENAMES/,/default y/ s/default y/default n/' "$IMAGE_CONFIG" || {
+    #       echo "::error::❌ 修改 VERSION_CODE_FILENAMES 失败"
+    #       exit 1
+    #     }
+        
+    #     # # 提取主版本号
+    #     # VERSION_NUMBER=$(awk -F '[ ,]' '/VERSION_NUMBER:=/ {for(i=1; i<=NF; i++) {if ($i ~ /[0-9]+\.[0-9]+\.[0-9]+/) {gsub(/[^0-9.]/, "", $i); print $i; exit}}}' "$VERSION_MK")
+        
+    #     # # 调整固件命名规则
+    #     # IMAGE_MK="include/image.mk"
+    #     # sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${date_version}-\$(1)|" "$IMAGE_MK" || {
+    #     #   echo "::error::❌ 修改固件前缀失败"
+    #     #   exit 1
+    #     # }
+        
+    #     # 修改系统描述信息
+    #     author="Loki"
+    #     sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by ${author}'/g" package/base-files/files/etc/openwrt_release
+    #     # sed -i "s/BUILD_ID.*/BUILD_ID=\"${date_version}\"/g" package/base-files/files/usr/lib/os-release
+        
+    #     # 验证修改结果
+    #     echo "=== version.mk 修改结果 ==="
+    #     grep -E 'REVISION:=|VERSION_CODE:=' "$VERSION_MK"
+    #     echo "=== image-config.in 修改结果 ==="
+    #     grep -A3 'config VERSION_CODE_FILENAMES' "$IMAGE_CONFIG"
 
     - name: 下载软件包
       id: package
