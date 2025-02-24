@@ -245,7 +245,7 @@ jobs:
         cat << EOF > $GETVER
         #!/usr/bin/env bash
         REV=$DATA_VERSION
-        echo "$REV"
+        echo "\$REV"
         EOF
         # # 修改 toplevel.mk 中的 REVISION 定义
         # TOPLEVEL_MK="include/toplevel.mk"
