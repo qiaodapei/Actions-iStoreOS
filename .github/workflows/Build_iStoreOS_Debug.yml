@@ -238,24 +238,25 @@ jobs:
         # 提取主版本号
         VERSION_NUMBER=$(awk -F '[ ,]' '/VERSION_NUMBER:=/ {for(i=1; i<=NF; i++) {if ($i ~ /[0-9]+\.[0-9]+\.[0-9]+/) {gsub(/[^0-9.]/, "", $i); print $i; exit}}}' include/version.mk)
         # 生成日期版本
-        date_version=$(date +"%Y%m%d%H")
+        DATA_VERSION=$(date +"%Y%m%d%H")
+        echo "DATA_VERSION=$(date +"%Y%m%d%H")" >> $GITHUB_ENV
         # 修改 toplevel.mk 中的 REVISION 定义
         TOPLEVEL_MK="include/toplevel.mk"
         if [ ! -f "$TOPLEVEL_MK" ]; then
           echo "::error::❌ 错误：toplevel.mk 文件不存在"
           exit 1
         fi
-        sed -i "s|REVISION:=\$(shell \$(TOPDIR)/scripts/getver.sh)|REVISION:=${date_version}|g" "$TOPLEVEL_MK" || {
+        sed -i "s|REVISION:=\$(shell \$(TOPDIR)/scripts/getver.sh)|REVISION:=${DATA_VERSION}|g" "$TOPLEVEL_MK" || {
           echo "::error::❌ 替换 toplevel.mk 中的 REVISION 失败"
           exit 1
         }
         # 验证替换结果
-        if ! grep -q "REVISION:=${date_version}" "$TOPLEVEL_MK"; then
+        if ! grep -q "REVISION:=${DATA_VERSION}" "$TOPLEVEL_MK"; then
           echo "::error::❌ toplevel.mk 中的 REVISION 替换未生效"
           exit 1
         fi
         # 调整 DEVICE_IMG_PREFIX 附加版本和日期
-        sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${date_version}-\$(1)|" include/image.mk
+        sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${DATA_VERSION}-\$(1)|" include/image.mk
         # 后续操作（修改描述等）
         author="Loki"
         sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by ${author}'/g" package/base-files/files/etc/openwrt_release
@@ -383,7 +384,7 @@ jobs:
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "::set-output name=release_tag::${{ matrix.target }}"
+        echo "::set-output name=release_tag::${{ matrix.target }}-${{ env.DATA_VERSION }}"
         touch release.txt
         echo "
         💻 架构: ${{ matrix.target }}
