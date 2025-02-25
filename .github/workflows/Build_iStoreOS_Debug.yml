@@ -61,7 +61,7 @@ jobs:
             use_sleep: false 
           - target:  phicomm-n1
             use_ngrok: true
-            use_sleep: false
+            use_sleep: true
 
     steps:
     - name: 准备完成
@@ -247,22 +247,6 @@ jobs:
         REV=$DATA_VERSION
         echo "\$REV"
         EOF
-        # # 修改 toplevel.mk 中的 REVISION 定义
-        # TOPLEVEL_MK="include/toplevel.mk"
-        # if [ ! -f "$TOPLEVEL_MK" ]; then
-        #   echo "::error::❌ 错误：toplevel.mk 文件不存在"
-        #   exit 1
-        # fi
-        # sed -i "s|REVISION:=\$(shell \$(TOPDIR)/scripts/getver.sh)|REVISION:=${DATA_VERSION}|g" "$TOPLEVEL_MK" || {
-        #   echo "::error::❌ 替换 toplevel.mk 中的 REVISION 失败"
-        #   exit 1
-        # }
-        # # 验证替换结果
-        # if ! grep -q "REVISION:=${DATA_VERSION}" "$TOPLEVEL_MK"; then
-        #   echo "::error::❌ toplevel.mk 中的 REVISION 替换未生效"
-        #   exit 1
-        # fi
-        # 调整 DEVICE_IMG_PREFIX 附加版本和日期
         sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${DATA_VERSION}-\$(1)|" include/image.mk
         # 后续操作（修改描述等）
         author="Loki"
@@ -376,5 +360,5 @@ jobs:
     - name: Keep ngrok running
       if: ${{ matrix.use_sleep == true }}
       run: |
-        sleep 43200  # Sleep for 12 hours (7200 seconds)
+        sleep 21600  # Sleep for 6 hours (21600 seconds)
         pkill ngrok  # Kill the ngrok process after 12 hours
