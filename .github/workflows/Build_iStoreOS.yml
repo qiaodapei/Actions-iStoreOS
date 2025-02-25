@@ -61,7 +61,7 @@ jobs:
             use_sleep: false 
           - target:  phicomm-n1
             use_ngrok: true
-            use_sleep: false
+            use_sleep: true
 
     steps:
     - name: 准备完成
