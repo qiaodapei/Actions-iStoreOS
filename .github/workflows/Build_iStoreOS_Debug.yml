@@ -48,7 +48,7 @@ jobs:
       fail-fast: false  # 允许其他架构继续构建
       matrix:
         os: ['ubuntu-22.04'] # 可以添加更多操作系统
-        target: [x86, rk33xx, rk35xx, phicomm-n1] # 使用矩阵来并行化构建不同的目标 
+        target: [x86, rk35xx, rk33xx, phicomm-n1] # 使用矩阵来并行化构建不同的目标 
         include:
           - target: x86 
             use_ngrok: false
@@ -247,6 +247,22 @@ jobs:
         REV=$DATA_VERSION
         echo "\$REV"
         EOF
+        # # 修改 toplevel.mk 中的 REVISION 定义
+        # TOPLEVEL_MK="include/toplevel.mk"
+        # if [ ! -f "$TOPLEVEL_MK" ]; then
+        #   echo "::error::❌ 错误：toplevel.mk 文件不存在"
+        #   exit 1
+        # fi
+        # sed -i "s|REVISION:=\$(shell \$(TOPDIR)/scripts/getver.sh)|REVISION:=${DATA_VERSION}|g" "$TOPLEVEL_MK" || {
+        #   echo "::error::❌ 替换 toplevel.mk 中的 REVISION 失败"
+        #   exit 1
+        # }
+        # # 验证替换结果
+        # if ! grep -q "REVISION:=${DATA_VERSION}" "$TOPLEVEL_MK"; then
+        #   echo "::error::❌ toplevel.mk 中的 REVISION 替换未生效"
+        #   exit 1
+        # fi
+        # 调整 DEVICE_IMG_PREFIX 附加版本和日期
         sed -i "s|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-\$(1)|DEVICE_IMG_PREFIX := \$(IMG_PREFIX)-${VERSION_NUMBER}-${DATA_VERSION}-\$(1)|" include/image.mk
         # 后续操作（修改描述等）
         author="Loki"
@@ -277,7 +293,7 @@ jobs:
         set +eo pipefail
         make -j$(nproc) || {
           echo "::warning::⚠️ 并行编译失败，尝试单线程编译...";
-          make -j1 || {
+          make -j1 V=s || {
             echo "::error::❌ 严重错误：编译最终失败，请检查以下可能原因：
             1. 软件包依赖不满足
             2. 配置文件存在冲突
@@ -360,5 +376,5 @@ jobs:
     - name: Keep ngrok running
       if: ${{ matrix.use_sleep == true }}
       run: |
-        sleep 21600  # Sleep for 6 hours (21600 seconds)
+        sleep 43200  # Sleep for 12 hours (7200 seconds)
         pkill ngrok  # Kill the ngrok process after 12 hours
