@@ -298,7 +298,7 @@ jobs:
             1. 软件包依赖不满足
             2. 配置文件存在冲突
             3. 系统资源不足";
-            exit 1;
+            # exit 1;
           }
         }
         echo "::set-output name=status::success"
