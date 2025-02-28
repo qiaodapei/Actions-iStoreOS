@@ -122,3 +122,9 @@ jobs:
       run: |
         sleep 43200  # Sleep for 12 hours (7200 seconds)
         pkill ngrok  # Kill the ngrok process after 12 hours
+    - name: 删除运行记录
+      uses: GitRML/delete-workflow-runs@main
+      with:
+        retain_days: 1
+        keep_minimum_runs: 1
+        token: ${{ env.GITHUB_TOKEN }}
