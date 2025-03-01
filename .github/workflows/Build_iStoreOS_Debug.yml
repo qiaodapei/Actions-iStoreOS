@@ -191,6 +191,10 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
 
+    - name: 启用 CCACHE
+      working-directory: /mnt/workdir/openwrt
+      run: echo "CONFIG_CCACHE=y" >> .config
+
     - name: 缓存 OpenWrt 目录
       uses: actions/cache@v3
       with:
@@ -202,10 +206,6 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.target }}-openwrt-${{ hashFiles('/mnt/workdir/openwrt/feeds.conf.default') }}
         restore-keys: |
           ${{ runner.os }}-${{ matrix.target }}-openwrt-
-
-    - name: 启用 CCACHE
-      working-directory: /mnt/workdir/openwrt
-      run: echo "CONFIG_CCACHE=y" >> .config
 
     - name: 更新 feeds
       run: cd openwrt && ./scripts/feeds update -a
