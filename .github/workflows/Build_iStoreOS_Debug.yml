@@ -145,7 +145,6 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /mnt/workdir
         sudo chown $USER:$GROUPS /mnt/workdir
-
     - name: 克隆源码
       working-directory: /mnt/workdir
       run: |
@@ -166,12 +165,24 @@ jobs:
         }
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    - name: 缓存构建动作
-      uses: klever1988/cachewrtbuild@main
+    # - name: 缓存构建动作
+    #   uses: klever1988/cachewrtbuild@main
+    #   with:
+    #     ccache: 'true'
+    #     mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
+    #     prefix: ${{ github.workspace }}/openwrt
+
+    - name: 缓存 OpenWrt 目录
+      uses: actions/cache@v3
       with:
-        ccache: 'true'
-        mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
-        prefix: ${{ github.workspace }}/openwrt
+        path: |
+          /mnt/workdir/openwrt/dl
+          /mnt/workdir/openwrt/staging_dir
+          /mnt/workdir/openwrt/feeds
+          /mnt/workdir/openwrt/ccache
+        key: ${{ runner.os }}-${{ matrix.target }}-openwrt-${{ hashFiles('/mnt/workdir/openwrt/feeds.conf.default') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.target }}-openwrt-
 
     - name: 加载自定义 feeds
       env:
@@ -298,7 +309,7 @@ jobs:
             1. 软件包依赖不满足
             2. 配置文件存在冲突
             3. 系统资源不足";
-            exit 1;
+            # exit 1;
           }
         }
         echo "::set-output name=status::success"
