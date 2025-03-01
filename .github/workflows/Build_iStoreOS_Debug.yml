@@ -171,6 +171,25 @@ jobs:
     #     ccache: 'true'
     #     mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
     #     prefix: ${{ github.workspace }}/openwrt
+    - name: 加载自定义 feeds
+      env:
+        FEEDS_CONF_PATH: iStoreOS/${{ matrix.target }}/${{ env.FEEDS_CONF }}
+      run: |
+        [ -e $FEEDS_CONF_PATH ] && mv $FEEDS_CONF_PATH openwrt/$FEEDS_CONF
+        chmod +x $DIY_P1_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P1_SH
+        
+    - name: 加载自定义配置
+      env:
+        CONFIG_FILE_PATH: iStoreOS/${{ matrix.target }}/${{ env.CONFIG_FILE }}
+      run: |
+        [ -e files ] && mv files openwrt/files
+        [ -e $CONFIG_FILE_PATH ] && mv $CONFIG_FILE_PATH openwrt/$CONFIG_FILE
+        cat openwrt/$CONFIG_FILE
+        chmod +x $DIY_P2_SH
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
 
     - name: 缓存 OpenWrt 目录
       uses: actions/cache@v3
@@ -183,26 +202,6 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.target }}-openwrt-${{ hashFiles('/mnt/workdir/openwrt/feeds.conf.default') }}
         restore-keys: |
           ${{ runner.os }}-${{ matrix.target }}-openwrt-
-
-    - name: 加载自定义 feeds
-      env:
-        FEEDS_CONF_PATH: iStoreOS/${{ matrix.target }}/${{ env.FEEDS_CONF }}
-      run: |
-        [ -e $FEEDS_CONF_PATH ] && mv $FEEDS_CONF_PATH openwrt/$FEEDS_CONF
-        chmod +x $DIY_P1_SH
-        cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P1_SH
-
-    - name: 加载自定义配置
-      env:
-        CONFIG_FILE_PATH: iStoreOS/${{ matrix.target }}/${{ env.CONFIG_FILE }}
-      run: |
-        [ -e files ] && mv files openwrt/files
-        [ -e $CONFIG_FILE_PATH ] && mv $CONFIG_FILE_PATH openwrt/$CONFIG_FILE
-        cat openwrt/$CONFIG_FILE
-        chmod +x $DIY_P2_SH
-        cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
 
     - name: 启用 CCACHE
       working-directory: /mnt/workdir/openwrt
