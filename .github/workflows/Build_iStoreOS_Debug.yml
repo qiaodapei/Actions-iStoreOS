@@ -193,12 +193,6 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    - name: 更新 feeds
-      run: cd openwrt && ./scripts/feeds update -a
-
-    - name: 安装 feeds
-      run: cd openwrt && ./scripts/feeds install -a
-
     - name: 加载自定义配置
       env:
         CONFIG_FILE_PATH: iStoreOS/${{ matrix.target }}/${{ env.CONFIG_FILE }}
@@ -210,6 +204,16 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
 
+    - name: 启用 CCACHE
+      working-directory: /mnt/workdir/openwrt
+      run: echo "CONFIG_CCACHE=y" >> .config
+
+    - name: 更新 feeds
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: 安装 feeds
+      run: cd openwrt && ./scripts/feeds install -a
+  
     - name: 设置LAN IP地址（路由器登录地址）
       run: |
         cd openwrt || exit 1
