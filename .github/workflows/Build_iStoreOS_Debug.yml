@@ -145,6 +145,7 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /mnt/workdir
         sudo chown $USER:$GROUPS /mnt/workdir
+
     - name: 克隆源码
       working-directory: /mnt/workdir
       run: |
@@ -165,12 +166,13 @@ jobs:
         }
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
-    # - name: 缓存构建动作
-    #   uses: klever1988/cachewrtbuild@main
-    #   with:
-    #     ccache: 'true'
-    #     mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
-    #     prefix: ${{ github.workspace }}/openwrt
+    - name: 缓存构建动作
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
+        prefix: ${{ github.workspace }}/openwrt
+
     - name: 加载自定义 feeds
       env:
         FEEDS_CONF_PATH: iStoreOS/${{ matrix.target }}/${{ env.FEEDS_CONF }}
@@ -179,7 +181,13 @@ jobs:
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-        
+
+    - name: 更新 feeds
+      run: cd openwrt && ./scripts/feeds update -a
+
+    - name: 安装 feeds
+      run: cd openwrt && ./scripts/feeds install -a
+
     - name: 加载自定义配置
       env:
         CONFIG_FILE_PATH: iStoreOS/${{ matrix.target }}/${{ env.CONFIG_FILE }}
@@ -191,45 +199,6 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
 
-    - name: 配置 CCACHE
-      run: |
-        echo "CONFIG_CCACHE=y" >> .config
-        echo "CONFIG_CCACHE_DIR=/mnt/workdir/openwrt/ccache" >> .config
-        echo "CONFIG_CCACHE_COMPRESS=y" >> .config
-        echo "CONFIG_CCACHE_MAXSIZE='2G'" >> .config  # 限制为 2GB
-        
-    - name: 验证文件存在
-      run: |
-        ls -l /mnt/workdir/openwrt/feeds.conf.default
-        ls -l /mnt/workdir/openwrt/.config
-
-    - name: 打印哈希值
-      run: |
-        echo "feeds.conf.default 哈希: ${{ hashFiles('openwrt/feeds.conf.default') }}"
-        echo ".config 哈希: ${{ hashFiles('openwrt/.config') }}"
-            
-    - name: 缓存 dl 目录
-      uses: actions/cache@v3
-      with:
-        path: /mnt/workdir/openwrt/dl
-        key: ${{ runner.os }}-${{ matrix.target }}-dl-${{ hashFiles('openwrt/feeds.conf.default') }}  # 使用相对路径
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.target }}-dl-
-    
-    - name: 缓存 ccache
-      uses: actions/cache@v3
-      with:
-        path: /mnt/workdir/openwrt/ccache
-        key: ${{ runner.os }}-${{ matrix.target }}-ccache-${{ hashFiles('openwrt/.config') }}  # 使用相对路径
-        restore-keys: |
-          ${{ runner.os }}-${{ matrix.target }}-ccache-
-
-    - name: 更新 feeds
-      run: cd openwrt && ./scripts/feeds update -a
-
-    - name: 安装 feeds
-      run: cd openwrt && ./scripts/feeds install -a
-  
     - name: 设置LAN IP地址（路由器登录地址）
       run: |
         cd openwrt || exit 1
@@ -332,7 +301,7 @@ jobs:
             # exit 1;
           }
         }
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "::set-output name=status::success"
 
     - name: 检查磁盘空间
       if: (!cancelled())
@@ -352,7 +321,7 @@ jobs:
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "::set-output name=status::success"
 
     - name: 上传固件目录
       uses: actions/upload-artifact@main
@@ -365,7 +334,7 @@ jobs:
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "release_tag=${{ matrix.target }}-${{ env.DATA_VERSION }}" >> $GITHUB_OUTPUT
+        echo "::set-output name=release_tag::${{ matrix.target }}-${{ env.DATA_VERSION }}"
         touch release.txt
         echo "
         💻 架构: ${{ matrix.target }}
@@ -381,7 +350,7 @@ jobs:
         👤 用户名: root
 
         🔒 密码: password " >> release.txt
-        echo "status=success" >> $GITHUB_OUTPUT
+        echo "::set-output name=status::success"
 
     - name: 自动发布固件到 Releases
       uses: softprops/action-gh-release@v1
