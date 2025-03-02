@@ -332,7 +332,7 @@ jobs:
             # exit 1;
           }
         }
-        echo "::set-output name=status::success"
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 检查磁盘空间
       if: (!cancelled())
@@ -352,7 +352,7 @@ jobs:
         cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "::set-output name=status::success"
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件目录
       uses: actions/upload-artifact@main
@@ -365,7 +365,7 @@ jobs:
       id: tag
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-        echo "::set-output name=release_tag::${{ matrix.target }}-${{ env.DATA_VERSION }}"
+        echo "release_tag=${{ matrix.target }}-${{ env.DATA_VERSION }}" >> $GITHUB_OUTPUT
         touch release.txt
         echo "
         💻 架构: ${{ matrix.target }}
@@ -381,7 +381,7 @@ jobs:
         👤 用户名: root
 
         🔒 密码: password " >> release.txt
-        echo "::set-output name=status::success"
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 自动发布固件到 Releases
       uses: softprops/action-gh-release@v1
