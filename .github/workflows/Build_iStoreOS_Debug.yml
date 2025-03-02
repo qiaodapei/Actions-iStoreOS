@@ -191,21 +191,31 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
 
-    - name: 启用 CCACHE
-      working-directory: /mnt/workdir/openwrt
-      run: echo "CONFIG_CCACHE=y" >> .config
-
-    - name: 缓存 OpenWrt 目录
+    - name: 配置 CCACHE
+      run: |
+        echo "CONFIG_CCACHE=y" >> .config
+        echo "CONFIG_CCACHE_DIR=/mnt/workdir/openwrt/ccache" >> .config
+        echo "CONFIG_CCACHE_MAXSIZE='2G'" >> .config  # 限制为 2GB
+        
+    - name: 验证文件存在
+      run: |
+        ls -l /mnt/workdir/openwrt/feeds.conf.default
+        ls -l /mnt/workdir/openwrt/.config
+    - name: 缓存 dl 目录
       uses: actions/cache@v3
       with:
-        path: |
-          /mnt/workdir/openwrt/dl
-          /mnt/workdir/openwrt/staging_dir
-          /mnt/workdir/openwrt/feeds
-          /mnt/workdir/openwrt/ccache
-        key: ${{ runner.os }}-${{ matrix.target }}-openwrt-${{ hashFiles('/mnt/workdir/openwrt/feeds.conf.default') }}
+        path: /mnt/workdir/openwrt/dl
+        key: ${{ runner.os }}-${{ matrix.target }}-dl-${{ hashFiles('/mnt/workdir/openwrt/feeds.conf.default') }}
         restore-keys: |
-          ${{ runner.os }}-${{ matrix.target }}-openwrt-
+          ${{ runner.os }}-${{ matrix.target }}-dl-
+    
+    - name: 缓存 ccache
+      uses: actions/cache@v3
+      with:
+        path: /mnt/workdir/openwrt/ccache
+        key: ${{ runner.os }}-${{ matrix.target }}-ccache-${{ hashFiles('/mnt/workdir/openwrt/.config') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.target }}-ccache-
 
     - name: 更新 feeds
       run: cd openwrt && ./scripts/feeds update -a
