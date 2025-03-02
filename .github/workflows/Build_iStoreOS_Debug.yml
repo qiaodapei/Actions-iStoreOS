@@ -202,11 +202,17 @@ jobs:
       run: |
         ls -l /mnt/workdir/openwrt/feeds.conf.default
         ls -l /mnt/workdir/openwrt/.config
+
+    - name: 打印哈希值
+      run: |
+        echo "feeds.conf.default 哈希: ${{ hashFiles('openwrt/feeds.conf.default') }}"
+        echo ".config 哈希: ${{ hashFiles('openwrt/.config') }}"
+            
     - name: 缓存 dl 目录
       uses: actions/cache@v3
       with:
         path: /mnt/workdir/openwrt/dl
-        key: ${{ runner.os }}-${{ matrix.target }}-dl-${{ hashFiles('/mnt/workdir/openwrt/feeds.conf.default') }}
+        key: ${{ runner.os }}-${{ matrix.target }}-dl-${{ hashFiles('openwrt/feeds.conf.default') }}  # 使用相对路径
         restore-keys: |
           ${{ runner.os }}-${{ matrix.target }}-dl-
     
@@ -214,7 +220,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: /mnt/workdir/openwrt/ccache
-        key: ${{ runner.os }}-${{ matrix.target }}-ccache-${{ hashFiles('/mnt/workdir/openwrt/.config') }}
+        key: ${{ runner.os }}-${{ matrix.target }}-ccache-${{ hashFiles('openwrt/.config') }}  # 使用相对路径
         restore-keys: |
           ${{ runner.os }}-${{ matrix.target }}-ccache-
 
