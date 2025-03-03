@@ -168,51 +168,6 @@ jobs:
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
         ls -al $GITHUB_WORKSPACE/openwrt
 
-    - name: 验证依赖文件存在性
-      run: |
-        # 检查 feeds.conf
-        if [ ! -f "/mnt/workdir/openwrt/feeds.conf" ]; then
-          echo "::error::❌ feeds.conf 不存在于 /mnt/workdir/openwrt/"
-          exit 1
-        fi
-    
-        # 检查 .config
-        if [ ! -f "/mnt/workdir/openwrt/.config" ]; then
-          echo "::error::❌ .config 不存在于 /mnt/workdir/openwrt/"
-          exit 1
-        fi
-    
-        # 检查 diy-part1.sh
-        if [ ! -f "$GITHUB_WORKSPACE/scripts/istoreos/diy-part1.sh" ]; then
-          echo "::error::❌ diy-part1.sh 不存在于 $GITHUB_WORKSPACE/scripts/istoreos/"
-          exit 1
-        fi
-    - name: 调试文件哈希
-      run: |
-        echo "feeds.conf 哈希: ${{ hashFiles('/mnt/workdir/openwrt/feeds.conf') }}"
-        echo ".config 哈希: ${{ hashFiles('/mnt/workdir/openwrt/.config') }}"
-        echo "diy-part1.sh 哈希: ${{ hashFiles('${{ github.workspace }}/scripts/istoreos/diy-part1.sh') }}"
-
-    - name: 缓存构建动作
-      uses: klever1988/cachewrtbuild@main
-      id: cache-step  # 必须添加 ID 以便监控输出
-      with:
-        ccache: 'true'
-        mixkey: |  # 多行模式声明多个依赖
-          # 基础标识符
-          ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
-          # 关键配置文件路径
-          ${{ hashFiles('/mnt/workdir/openwrt/feeds.conf') }}
-          ${{ hashFiles('/mnt/workdir/openwrt/.config') }}
-          # 新增自定义脚本路径
-          ${{ hashFiles('${{ github.workspace }}/scripts/istoreos/diy-part1.sh') }}
-        prefix: ${{ github.workspace }}/openwrt
-        
-    - name: 显示缓存状态
-      run: |
-        echo "缓存键: ${{ steps.cache-step.outputs.cache-key }}"
-        echo "缓存命中: ${{ steps.cache-step.outputs.cache-hit }}"
-
     # - name: 缓存构建动作
     #   uses: klever1988/cachewrtbuild@main
     #   with:
@@ -298,7 +253,24 @@ jobs:
         # 后续操作（修改描述等）
         author="Loki"
         sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by ${author}'/g" package/base-files/files/etc/openwrt_release
+        
+    - name: 缓存构建动作
+      uses: klever1988/cachewrtbuild@main
+      id: cache-step
+      with:
+        ccache: 'true'
+        mixkey: |
+          ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
+          ${{ hashFiles('/mnt/workdir/openwrt/feeds.conf') }}
+          ${{ hashFiles('/mnt/workdir/openwrt/.config') }}
+          ${{ hashFiles('${{ github.workspace }}/scripts/istoreos/diy-part1.sh') }}
+        prefix: ${{ github.workspace }}/openwrt
 
+    - name: 显示缓存状态
+      run: |
+        echo "缓存键: ${{ steps.cache-step.outputs.cache-key }}"
+        echo "缓存命中: ${{ steps.cache-step.outputs.cache-hit }}"
+        
     - name: 下载软件包
       id: package
       run: |
