@@ -1,4 +1,4 @@
-name: Build iStore OS 
+name: Build iStore OS Debug
 
 # 添加版本兼容性声明
 on:
