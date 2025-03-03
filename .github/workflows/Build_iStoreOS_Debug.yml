@@ -166,14 +166,22 @@ jobs:
           exit 1;
         }
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
-        ls -al $GITHUB_WORKSPACE/openwrt
 
-    # - name: 缓存构建动作
-    #   uses: klever1988/cachewrtbuild@main
-    #   with:
-    #     ccache: 'true'
-    #     mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
-    #     prefix: ${{ github.workspace }}/openwrt
+    - name: 缓存构建动作
+      uses: klever1988/cachewrtbuild@main
+      with:
+        ccache: 'true'
+        gocache: 'false'  # 禁用 Go 缓存
+        mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
+        prefix: ${{ github.workspace }}/openwrt
+        
+    - name: 显示缓存状态（恢复后）
+      run: |
+        echo "------------------------------- CCache 缓存统计 -------------------------------"
+        ccache -s  # 显示缓存命中率、缓存大小等信息
+        echo -e "\n------------------------------- 缓存目录结构 -------------------------------"
+        ls -lh ~/.ccache  # 列出缓存目录内容
+        du -sh ~/.ccache  # 显示缓存目录总大小
 
     - name: 加载自定义 feeds
       env:
@@ -196,7 +204,6 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE_PATH ] && mv $CONFIG_FILE_PATH openwrt/$CONFIG_FILE
-        cat openwrt/$CONFIG_FILE
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
@@ -253,24 +260,7 @@ jobs:
         # 后续操作（修改描述等）
         author="Loki"
         sed -i "s/DISTRIB_DESCRIPTION.*/DISTRIB_DESCRIPTION='%D %V %C by ${author}'/g" package/base-files/files/etc/openwrt_release
-        
-    - name: 缓存构建动作
-      uses: klever1988/cachewrtbuild@main
-      id: cache-step
-      with:
-        ccache: 'true'
-        mixkey: |
-          ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
-          ${{ hashFiles('/mnt/workdir/openwrt/feeds.conf') }}
-          ${{ hashFiles('/mnt/workdir/openwrt/.config') }}
-          ${{ hashFiles('${{ github.workspace }}/scripts/istoreos/diy-part1.sh') }}
-        prefix: ${{ github.workspace }}/openwrt
 
-    - name: 显示缓存状态
-      run: |
-        echo "缓存键: ${{ steps.cache-step.outputs.cache-key }}"
-        echo "缓存命中: ${{ steps.cache-step.outputs.cache-hit }}"
-        
     - name: 下载软件包
       id: package
       run: |
@@ -304,8 +294,19 @@ jobs:
             # exit 1;
           }
         }
+        # 编译完成后再次显示缓存状态
+        echo "------------------------------- 编译后的 CCache 统计 -------------------------------"
+        ccache -s
         echo "status=success" >> $GITHUB_OUTPUT
-
+        
+    - name: 显示最终缓存状态
+      if: always()  # 无论编译成功与否都显示
+      run: |
+        echo "------------------------------- 最终 CCache 统计 -------------------------------"
+        ccache -s
+        echo -e "\n------------------------------- 缓存目录大小 -------------------------------"
+        du -sh ~/.ccache
+        
     - name: 检查磁盘空间
       if: (!cancelled())
       run: df -hT
