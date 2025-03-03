@@ -1,4 +1,4 @@
-name: Build iStore OS Debug
+name: Build iStore OS 
 
 # 添加版本兼容性声明
 on:
@@ -119,6 +119,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: 1.21.1
+        cache: false  # 关键：禁用 Go 模块缓存
 
     - name: 初始化编译环境
       env:
@@ -171,17 +172,8 @@ jobs:
       uses: klever1988/cachewrtbuild@main
       with:
         ccache: 'true'
-        gocache: 'false'  # 禁用 Go 缓存
         mixkey: ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
         prefix: ${{ github.workspace }}/openwrt
-        
-    - name: 显示缓存状态（恢复后）
-      run: |
-        echo "------------------------------- CCache 缓存统计 -------------------------------"
-        ccache -s  # 显示缓存命中率、缓存大小等信息
-        echo -e "\n------------------------------- 缓存目录结构 -------------------------------"
-        ls -lh ~/.ccache  # 列出缓存目录内容
-        du -sh ~/.ccache  # 显示缓存目录总大小
 
     - name: 加载自定义 feeds
       env:
@@ -204,6 +196,7 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE_PATH ] && mv $CONFIG_FILE_PATH openwrt/$CONFIG_FILE
+        cat openwrt/$CONFIG_FILE
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
@@ -294,19 +287,8 @@ jobs:
             # exit 1;
           }
         }
-        # 编译完成后再次显示缓存状态
-        echo "------------------------------- 编译后的 CCache 统计 -------------------------------"
-        ccache -s
         echo "status=success" >> $GITHUB_OUTPUT
-        
-    - name: 显示最终缓存状态
-      if: always()  # 无论编译成功与否都显示
-      run: |
-        echo "------------------------------- 最终 CCache 统计 -------------------------------"
-        ccache -s
-        echo -e "\n------------------------------- 缓存目录大小 -------------------------------"
-        du -sh ~/.ccache
-        
+
     - name: 检查磁盘空间
       if: (!cancelled())
       run: df -hT
