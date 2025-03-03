@@ -166,18 +166,19 @@ jobs:
           exit 1;
         }
         ln -sf /mnt/workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        ls -al $GITHUB_WORKSPACE/openwrt
 
     - name: 验证依赖文件存在性
       run: |
         # 检查 feeds.conf
-        if [ ! -f "$GITHUB_WORKSPACE/openwrt/feeds.conf" ]; then
-          echo "::error::❌ feeds.conf 不存在于 $GITHUB_WORKSPACE/openwrt/"
+        if [ ! -f "/mnt/workdir/openwrt/feeds.conf" ]; then
+          echo "::error::❌ feeds.conf 不存在于 /mnt/workdir/openwrt/"
           exit 1
         fi
     
         # 检查 .config
-        if [ ! -f "$GITHUB_WORKSPACE/openwrt/.config" ]; then
-          echo "::error::❌ .config 不存在于 $GITHUB_WORKSPACE/openwrt/"
+        if [ ! -f "/mnt/workdir/openwrt/.config" ]; then
+          echo "::error::❌ .config 不存在于 /mnt/workdir/openwrt/"
           exit 1
         fi
     
@@ -188,8 +189,8 @@ jobs:
         fi
     - name: 调试文件哈希
       run: |
-        echo "feeds.conf 哈希: ${{ hashFiles('${{ github.workspace }}/openwrt/feeds.conf') }}"
-        echo ".config 哈希: ${{ hashFiles('${{ github.workspace }}/openwrt/.config') }}"
+        echo "feeds.conf 哈希: ${{ hashFiles('/mnt/workdir/openwrt/feeds.conf') }}"
+        echo ".config 哈希: ${{ hashFiles('/mnt/workdir/openwrt/.config') }}"
         echo "diy-part1.sh 哈希: ${{ hashFiles('${{ github.workspace }}/scripts/istoreos/diy-part1.sh') }}"
 
     - name: 缓存构建动作
@@ -201,8 +202,8 @@ jobs:
           # 基础标识符
           ${{ matrix.target }}-${{ github.event.inputs.repo_branch }}
           # 关键配置文件路径
-          ${{ hashFiles('${{ github.workspace }}/openwrt/feeds.conf') }}
-          ${{ hashFiles('${{ github.workspace }}/openwrt/.config') }}
+          ${{ hashFiles('/mnt/workdir/openwrt/feeds.conf') }}
+          ${{ hashFiles('/mnt/workdir/openwrt/.config') }}
           # 新增自定义脚本路径
           ${{ hashFiles('${{ github.workspace }}/scripts/istoreos/diy-part1.sh') }}
         prefix: ${{ github.workspace }}/openwrt
