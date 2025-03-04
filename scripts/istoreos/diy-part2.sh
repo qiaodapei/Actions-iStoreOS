@@ -145,8 +145,8 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-gowebdav
 
 # 启用 netdata-ssl,添加Netdata
-cp -rf ../../kiddin9/netdata netdata
-cp -rf ../../kiddin9/luci-app-netdata luci-app-netdata
+# cp -rf ../../kiddin9/netdata netdata
+# cp -rf ../../kiddin9/luci-app-netdata luci-app-netdata
 
 # 科学上网和代理应用
 #SSR
@@ -358,7 +358,7 @@ CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_simple-obfs=y
 
 # 强制启用 netdata-ssl
-CONFIG_PACKAGE_netdata-ssl=y
+# CONFIG_PACKAGE_netdata-ssl=y
 
 
 #Passwall和Passwall2
