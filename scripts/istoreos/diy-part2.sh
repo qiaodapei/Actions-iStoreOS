@@ -146,6 +146,11 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 
 # 修复luci-app-LingTiGameAcc依赖' has a dependency on 'LingTiGameAcc', which does not exist
 cp -rf ../../kiddin9/lingtigameacc lingtigameacc
+
+# 启用 netdata-ssl,添加Netdata
+cp -rf ../../kiddin9/netdata netdata
+cp -rf ../../kiddin9/luci-app-netdata luci-app-netdata
+
 # 科学上网和代理应用
 #SSR
 # svn export https://github.com/fw876/helloworld/trunk helloworld
@@ -298,6 +303,15 @@ popd
 
 # 添加第三方应用
 echo "
+# 启用pcre2开发库 
+CONFIG_PACKAGE_pcre2-host=y
+# 启用 LingTiGameAcc
+CONFIG_PACKAGE_LingTiGameAcc=y
+# 强制启用 netdata-ssl
+CONFIG_PACKAGE_netdata-ssl=y
+# 启用 NTFS3 内核模块
+CONFIG_PACKAGE_kmod-fs-ntfs3=y
+
 # 系统相关应用
 CONFIG_PACKAGE_luci-app-poweroff=y
 CONFIG_PACKAGE_luci-app-fileassistant=y
