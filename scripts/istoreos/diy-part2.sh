@@ -340,6 +340,8 @@ CONFIG_PACKAGE_luci-app-ssr-plus=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan is not set
 
 # 启用 Passwall2 及其核心组件
+CONFIG_PACKAGE_tcping=y
+CONFIG_PACKAGE_geoview=y
 CONFIG_PACKAGE_luci-app-passwall2=y
 CONFIG_PACKAGE_luci-i18n-passwall2-zh-cn=y
 # Passwall2 的依赖组件（根据实际需要选择）
@@ -350,8 +352,7 @@ CONFIG_PACKAGE_xray-core=y
 # 可选：启用其他依赖（如 ChinaDNS、Simple-Obfs 等）
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_simple-obfs=y
-CONFIG_PACKAGE_tcping=y
-CONFIG_PACKAGE_geoview=y
+
 
 #Passwall和Passwall2
 # CONFIG_PACKAGE_luci-app-passwall2=y
