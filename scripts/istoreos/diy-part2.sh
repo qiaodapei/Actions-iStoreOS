@@ -350,6 +350,8 @@ CONFIG_PACKAGE_xray-core=y
 # 可选：启用其他依赖（如 ChinaDNS、Simple-Obfs 等）
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_simple-obfs=y
+CONFIG_PACKAGE_tcping=y
+CONFIG_PACKAGE_geoview=y
 
 #Passwall和Passwall2
 # CONFIG_PACKAGE_luci-app-passwall2=y
