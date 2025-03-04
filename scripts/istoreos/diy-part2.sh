@@ -144,9 +144,6 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # Gowebdav（iStoreOS已有）
 # svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-gowebdav
 
-# 修复luci-app-LingTiGameAcc依赖' has a dependency on 'LingTiGameAcc', which does not exist
-cp -rf ../../kiddin9/lingtigameacc lingtigameacc
-
 # 启用 netdata-ssl,添加Netdata
 cp -rf ../../kiddin9/netdata netdata
 cp -rf ../../kiddin9/luci-app-netdata luci-app-netdata
@@ -360,8 +357,6 @@ CONFIG_PACKAGE_xray-core=y
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_simple-obfs=y
 
-# 启用 LingTiGameAcc
-CONFIG_PACKAGE_lingtigameacc=y
 # 强制启用 netdata-ssl
 CONFIG_PACKAGE_netdata-ssl=y
 
