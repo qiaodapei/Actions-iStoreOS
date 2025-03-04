@@ -122,8 +122,8 @@ cp -rf ../../kiddin9/luci-app-onliner/* luci-app-onliner
 #Wolplus（已有Wol）
 # svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-wolplus
 #WiFischedule
-mkdir luci-app-wifischedule
-cp -rf ../../kiddin9/luci-app-wifischedule/* luci-app-wifischedule
+# mkdir luci-app-wifischedule
+# cp -rf ../../kiddin9/luci-app-wifischedule/* luci-app-wifischedule
 #RAMfree
 mkdir luci-app-ramfree
 cp -rf ../../kiddin9/luci-app-ramfree/* luci-app-ramfree
@@ -302,7 +302,7 @@ CONFIG_PACKAGE_luci-app-fileassistant=y
 CONFIG_PACKAGE_luci-app-onliner=y
 CONFIG_PACKAGE_luci-app-eqos=y
 # CONFIG_PACKAGE_luci-app-wolplus=y
-CONFIG_PACKAGE_luci-app-wifischedule=y
+# CONFIG_PACKAGE_luci-app-wifischedule=y
 CONFIG_PACKAGE_luci-app-ramfree=y
 # CONFIG_PACKAGE_luci-app-usb3disable=y
 CONFIG_PACKAGE_luci-app-luci-app-netdata=y
@@ -339,16 +339,16 @@ CONFIG_PACKAGE_luci-app-ssr-plus=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan is not set
 
 # 启用 Passwall2 及其核心组件
-echo "CONFIG_PACKAGE_luci-app-passwall2=y" >> .config
-echo "CONFIG_PACKAGE_luci-i18n-passwall2-zh-cn=y" >> .config
+CONFIG_PACKAGE_luci-app-passwall2=y
+CONFIG_PACKAGE_luci-i18n-passwall2-zh-cn=y
 # Passwall2 的依赖组件（根据实际需要选择）
-echo "CONFIG_PACKAGE_dns2socks=y" >> .config
-echo "CONFIG_PACKAGE_microsocks=y" >> .config
-echo "CONFIG_PACKAGE_v2ray-core=y" >> .config
-echo "CONFIG_PACKAGE_xray-core=y" >> .config
+CONFIG_PACKAGE_dns2socks=y
+CONFIG_PACKAGE_microsocks=y
+CONFIG_PACKAGE_v2ray-core=y
+CONFIG_PACKAGE_xray-core=y
 # 可选：启用其他依赖（如 ChinaDNS、Simple-Obfs 等）
-echo "CONFIG_PACKAGE_chinadns-ng=y" >> .config
-echo "CONFIG_PACKAGE_simple-obfs=y" >> .config
+CONFIG_PACKAGE_chinadns-ng=y
+CONFIG_PACKAGE_simple-obfs=y
 
 #Passwall和Passwall2
 # CONFIG_PACKAGE_luci-app-passwall2=y
