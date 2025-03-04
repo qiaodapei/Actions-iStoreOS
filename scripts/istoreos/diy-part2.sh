@@ -360,14 +360,11 @@ CONFIG_PACKAGE_xray-core=y
 CONFIG_PACKAGE_chinadns-ng=y
 CONFIG_PACKAGE_simple-obfs=y
 
-# 启用pcre2开发库 
-CONFIG_PACKAGE_pcre2-host=y
 # 启用 LingTiGameAcc
-CONFIG_PACKAGE_LingTiGameAcc=y
+CONFIG_PACKAGE_lingtigameacc=y
 # 强制启用 netdata-ssl
 CONFIG_PACKAGE_netdata-ssl=y
-# 启用 NTFS3 内核模块
-CONFIG_PACKAGE_kmod-fs-ntfs3=y
+
 
 #Passwall和Passwall2
 # CONFIG_PACKAGE_luci-app-passwall2=y
