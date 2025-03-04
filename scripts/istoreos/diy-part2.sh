@@ -338,6 +338,18 @@ CONFIG_PACKAGE_luci-app-ssr-plus=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Server=n
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan is not set
 
+# 启用 Passwall2 及其核心组件
+echo "CONFIG_PACKAGE_luci-app-passwall2=y" >> .config
+echo "CONFIG_PACKAGE_luci-i18n-passwall2-zh-cn=y" >> .config
+# Passwall2 的依赖组件（根据实际需要选择）
+echo "CONFIG_PACKAGE_dns2socks=y" >> .config
+echo "CONFIG_PACKAGE_microsocks=y" >> .config
+echo "CONFIG_PACKAGE_v2ray-core=y" >> .config
+echo "CONFIG_PACKAGE_xray-core=y" >> .config
+# 可选：启用其他依赖（如 ChinaDNS、Simple-Obfs 等）
+echo "CONFIG_PACKAGE_chinadns-ng=y" >> .config
+echo "CONFIG_PACKAGE_simple-obfs=y" >> .config
+
 #Passwall和Passwall2
 # CONFIG_PACKAGE_luci-app-passwall2=y
 # CONFIG_PACKAGE_luci-app-passwall=y
