@@ -153,7 +153,7 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # cp -rf ../../kiddin9/dns2socks/* dns2socks
 # cp -rf ../../kiddin9/lua-neturl/* lua-neturl
 # cp -rf ../../kiddin9/microsocks/* microsocks
-# cp -rf ../../kiddin9/tcping/* tcping
+cp -rf ../../kiddin9/tcping/* tcping
 # cp -rf ../../kiddin9/shadowsocksr-libev/* shadowsocksr-libev
 # cp -rf ../../kiddin9/chinadns-ng/* chinadns-ng
 # cp -rf ../../kiddin9/mosdns/* mosdns
@@ -169,7 +169,13 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # cp -rf ../../kiddin9/trojan/* trojan
 #Passwall和Passwall2
 mkdir luci-app-passwall2
+cp -rf ../../kiddin9/tcping/* tcping
+cp -rf ../../kiddin9/geoview/* geoview
+cp -rf ../../kiddin9/hysteria/* hysteria
+cp -rf ../../kiddin9/naiveproxy/* naiveproxy
+cp -rf ../../kiddin9/naiveproxy/* naiveproxy
 cp -rf ../../kiddin9/luci-app-passwall2/* luci-app-passwall2
+
 #VSSR（Hello Word）
 # svn export https://github.com/jerrykuku/lua-maxminddb/trunk lua-maxminddb
 # svn export https://github.com/jerrykuku/luci-app-vssr/trunk luci-app-vssr
@@ -338,6 +344,13 @@ CONFIG_PACKAGE_luci-app-luci-app-rtbwmon=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan is not set
 
 #Passwall和Passwall2
+CONFIG_PACKAGE_tcping=y
+CONFIG_PACKAGE_geoview=y
+CONFIG_PACKAGE_shadowsocksr-libev-ssr-local=y
+CONFIG_PACKAGE_shadowsocksr-libev-ssr-redir=y
+CONFIG_PACKAGE_simple-obfs=y
+CONFIG_PACKAGE_sing-box=y
+CONFIG_PACKAGE_v2ray-plugin=y
 CONFIG_PACKAGE_luci-app-passwall2=y
 CONFIG_PACKAGE_luci-app-passwall=y
 CONFIG_PACKAGE_luci-app-passwall_Transparent_Proxy=y
