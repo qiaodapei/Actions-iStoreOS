@@ -168,9 +168,8 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # cp -rf ../../kiddin9/v2ray-plugin/* v2ray-plugin
 # cp -rf ../../kiddin9/trojan/* trojan
 #Passwall和Passwall2
-# svn export https://github.com/xiaorouji/openwrt-passwall/trunk openwrt-passwall
-# svn export https://github.com/xiaorouji/openwrt-passwall/branches/luci/luci-app-passwall
-# svn export https://github.com/xiaorouji/openwrt-passwall2/trunk/luci-app-passwall2
+mkdir luci-app-passwall2
+cp -rf ../../kiddin9/luci-app-passwall2/* luci-app-passwall2
 #VSSR（Hello Word）
 # svn export https://github.com/jerrykuku/lua-maxminddb/trunk lua-maxminddb
 # svn export https://github.com/jerrykuku/luci-app-vssr/trunk luci-app-vssr
@@ -187,7 +186,7 @@ if [ "$1" = "rk33xx" ]; then
     $GITHUB_WORKSPACE/scripts/istoreos/preset-clash-core.sh arm64
 elif [ "$1" = "rk35xx" ]; then
     $GITHUB_WORKSPACE/scripts/istoreos/preset-clash-core.sh arm64
-elif [ "$1" = "n1" ]; then
+elif [ "$1" = "phicomm-n1" ]; then
     $GITHUB_WORKSPACE/scripts/istoreos/preset-clash-core.sh arm64
 elif [ "$1" = "x86" ]; then
     $GITHUB_WORKSPACE/scripts/istoreos/preset-clash-core.sh amd64
@@ -339,7 +338,7 @@ CONFIG_PACKAGE_luci-app-ssr-plus=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan is not set
 
 #Passwall和Passwall2
-# CONFIG_PACKAGE_luci-app-passwall2=y
+CONFIG_PACKAGE_luci-app-passwall2=y
 # CONFIG_PACKAGE_luci-app-passwall=y
 # CONFIG_PACKAGE_luci-app-passwall_Transparent_Proxy=y
 # CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Brook=y
