@@ -158,7 +158,7 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # cp -rf ../../kiddin9/lua-neturl/* lua-neturl
 # cp -rf ../../kiddin9/microsocks/* microsocks
 cp -rf ../../kiddin9/tcping tcping
-cp -rf ../../kiddin9/geoview geoview
+# cp -rf ../../kiddin9/geoview geoview
 # cp -rf ../../kiddin9/shadowsocksr-libev/* shadowsocksr-libev
 # cp -rf ../../kiddin9/chinadns-ng/* chinadns-ng
 # cp -rf ../../kiddin9/mosdns/* mosdns
@@ -345,7 +345,7 @@ CONFIG_PACKAGE_luci-app-ssr-plus=y
 
 # 启用 Passwall2 及其核心组件
 CONFIG_PACKAGE_tcping=y
-CONFIG_PACKAGE_geoview=y
+# CONFIG_PACKAGE_geoview=y
 CONFIG_PACKAGE_luci-app-passwall2=y
 CONFIG_PACKAGE_luci-i18n-passwall2-zh-cn=y
 # Passwall2 的依赖组件（根据实际需要选择）
