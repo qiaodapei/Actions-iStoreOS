@@ -144,6 +144,8 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # Gowebdav（iStoreOS已有）
 # svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-gowebdav
 
+# 修复luci-app-LingTiGameAcc依赖' has a dependency on 'LingTiGameAcc', which does not exist
+cp -rf ../../kiddin9/lingtigameacc lingtigameacc
 # 科学上网和代理应用
 #SSR
 # svn export https://github.com/fw876/helloworld/trunk helloworld
@@ -153,8 +155,8 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # cp -rf ../../kiddin9/dns2socks/* dns2socks
 # cp -rf ../../kiddin9/lua-neturl/* lua-neturl
 # cp -rf ../../kiddin9/microsocks/* microsocks
-cp -rf ../../kiddin9/tcping/* tcping
-cp -rf ../../kiddin9/geoview/* geoview
+cp -rf ../../kiddin9/tcping tcping
+cp -rf ../../kiddin9/geoview geoview
 # cp -rf ../../kiddin9/shadowsocksr-libev/* shadowsocksr-libev
 # cp -rf ../../kiddin9/chinadns-ng/* chinadns-ng
 # cp -rf ../../kiddin9/mosdns/* mosdns
