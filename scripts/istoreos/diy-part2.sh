@@ -122,8 +122,8 @@ cp -rf ../../kiddin9/luci-app-onliner/* luci-app-onliner
 #Wolplus（已有Wol）
 # svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-wolplus
 #WiFischedule
-# mkdir luci-app-wifischedule
-# cp -rf ../../kiddin9/luci-app-wifischedule/* luci-app-wifischedule
+mkdir luci-app-wifischedule
+cp -rf ../../kiddin9/luci-app-wifischedule/* luci-app-wifischedule
 #RAMfree
 mkdir luci-app-ramfree
 cp -rf ../../kiddin9/luci-app-ramfree/* luci-app-ramfree
@@ -144,10 +144,6 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # Gowebdav（iStoreOS已有）
 # svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-gowebdav
 
-# 启用 netdata-ssl,添加Netdata
-# cp -rf ../../kiddin9/netdata netdata
-# cp -rf ../../kiddin9/luci-app-netdata luci-app-netdata
-
 # 科学上网和代理应用
 #SSR
 # svn export https://github.com/fw876/helloworld/trunk helloworld
@@ -157,8 +153,7 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # cp -rf ../../kiddin9/dns2socks/* dns2socks
 # cp -rf ../../kiddin9/lua-neturl/* lua-neturl
 # cp -rf ../../kiddin9/microsocks/* microsocks
-cp -rf ../../kiddin9/tcping tcping
-# cp -rf ../../kiddin9/geoview geoview
+# cp -rf ../../kiddin9/tcping/* tcping
 # cp -rf ../../kiddin9/shadowsocksr-libev/* shadowsocksr-libev
 # cp -rf ../../kiddin9/chinadns-ng/* chinadns-ng
 # cp -rf ../../kiddin9/mosdns/* mosdns
@@ -307,7 +302,7 @@ CONFIG_PACKAGE_luci-app-fileassistant=y
 CONFIG_PACKAGE_luci-app-onliner=y
 CONFIG_PACKAGE_luci-app-eqos=y
 # CONFIG_PACKAGE_luci-app-wolplus=y
-# CONFIG_PACKAGE_luci-app-wifischedule=y
+CONFIG_PACKAGE_luci-app-wifischedule=y
 CONFIG_PACKAGE_luci-app-ramfree=y
 # CONFIG_PACKAGE_luci-app-usb3disable=y
 CONFIG_PACKAGE_luci-app-luci-app-netdata=y
@@ -342,24 +337,6 @@ CONFIG_PACKAGE_luci-app-ssr-plus=y
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Client=n
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_ShadowsocksR_Libev_Server=n
 # CONFIG_PACKAGE_luci-app-ssr-plus_INCLUDE_Trojan is not set
-
-# 启用 Passwall2 及其核心组件
-CONFIG_PACKAGE_tcping=y
-# CONFIG_PACKAGE_geoview=y
-CONFIG_PACKAGE_luci-app-passwall2=y
-CONFIG_PACKAGE_luci-i18n-passwall2-zh-cn=y
-# Passwall2 的依赖组件（根据实际需要选择）
-CONFIG_PACKAGE_dns2socks=y
-CONFIG_PACKAGE_microsocks=y
-CONFIG_PACKAGE_v2ray-core=y
-CONFIG_PACKAGE_xray-core=y
-# 可选：启用其他依赖（如 ChinaDNS、Simple-Obfs 等）
-CONFIG_PACKAGE_chinadns-ng=y
-CONFIG_PACKAGE_simple-obfs=y
-
-# 强制启用 netdata-ssl
-# CONFIG_PACKAGE_netdata-ssl=y
-
 
 #Passwall和Passwall2
 # CONFIG_PACKAGE_luci-app-passwall2=y
