@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       repo_branch:
-        description: 'iStoreOS 仓库分支'
+        description: 'iStoreOS 仓库分支（可选值：istoreos-22.03, istoreos-23.05, istoreos-24.10）'
         required: true
         default: 'istoreos-22.03'
       lan_ip:
@@ -33,8 +33,6 @@ env:
   REPO_URL: https://github.com/istoreos/istoreos
   FEEDS_CONF: feeds.conf
   CONFIG_FILE: .config
-  DIY_P1_SH: scripts/istoreos/diy-part1.sh
-  DIY_P2_SH: scripts/istoreos/diy-part2.sh
   WORK_DIR: /mnt/workdir
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -67,8 +65,21 @@ jobs:
     steps:
     - name: 准备完成
       uses: actions/checkout@v4
+    
+    - name: 检查 repo_branch 是否合法
+        run: |
+          VALID_BRANCHES=("istoreos-22.03" "istoreos-23.05" "istoreos-24.10")
+          if [[ ! " ${VALID_BRANCHES[@]} " =~ " ${{ github.event.inputs.repo_branch }} " ]]; then
+            echo "错误：repo_branch 必须是以下值之一: ${VALID_BRANCHES[*]}"
+            exit 1
+          fi
     - name: 验证输入参数
       run: |
+        # 动态设置DIY脚本路径
+        REPO_BRANCH="${{ github.event.inputs.repo_branch }}"
+        echo "DIY_P1_SH=scripts/${REPO_BRANCH}/diy-part1.sh" >> $GITHUB_ENV
+        echo "DIY_P2_SH=scripts/${REPO_BRANCH}/diy-part2.sh" >> $GITHUB_ENV
+
         echo "开始验证输入参数..."
         echo "验证仓库分支是否存在..."
         if ! git ls-remote --exit-code --heads $REPO_URL refs/heads/${{ github.event.inputs.repo_branch }}; then
@@ -177,12 +188,12 @@ jobs:
 
     - name: 加载自定义 feeds
       env:
-        FEEDS_CONF_PATH: iStoreOS/${{ matrix.target }}/${{ env.FEEDS_CONF }}
+        FEEDS_CONF_PATH: config/${{ matrix.target }}/${{ env.FEEDS_CONF }}
       run: |
         [ -e $FEEDS_CONF_PATH ] && mv $FEEDS_CONF_PATH openwrt/$FEEDS_CONF
-        chmod +x $DIY_P1_SH
+        chmod +x ${{ env.DIY_P1_SH }}  # 使用动态路径
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P1_SH
+        $GITHUB_WORKSPACE/${{ env.DIY_P1_SH }}
 
     - name: 更新 feeds
       run: cd openwrt && ./scripts/feeds update -a
@@ -192,14 +203,13 @@ jobs:
 
     - name: 加载自定义配置
       env:
-        CONFIG_FILE_PATH: iStoreOS/${{ matrix.target }}/${{ env.CONFIG_FILE }}
+        CONFIG_FILE_PATH: config/${{ matrix.target }}/${{ env.CONFIG_FILE }}
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE_PATH ] && mv $CONFIG_FILE_PATH openwrt/$CONFIG_FILE
-        # cat openwrt/$CONFIG_FILE
-        chmod +x $DIY_P2_SH
+        chmod +x "${{ env.DIY_P2_SH }}"          # 使用动态环境变量
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH ${{ matrix.target }}
+        "$GITHUB_WORKSPACE/${{ env.DIY_P2_SH }}" ${{ matrix.target }}  # 动态路径
 
     - name: 设置LAN IP地址（路由器登录地址）
       run: |
