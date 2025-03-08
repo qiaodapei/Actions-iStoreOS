@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       repo_branch:
-        description: 'iStoreOS 仓库分支:'
+        description: 'iStoreOS 仓库分支（可选值：istoreos-22.03, istoreos-23.05, istoreos-24.10）:'
         required: true
         default: 'istoreos-22.03'
       lan_ip:
@@ -67,12 +67,12 @@ jobs:
       uses: actions/checkout@v4
     
     - name: 检查 repo_branch 是否合法
-        run: |
-          VALID_BRANCHES=("istoreos-22.03" "istoreos-23.05" "istoreos-24.10")
-          if [[ ! " ${VALID_BRANCHES[@]} " =~ " ${{ github.event.inputs.repo_branch }} " ]]; then
-            echo "错误：repo_branch 必须是以下值之一: ${VALID_BRANCHES[*]}"
-            exit 1
-          fi
+      run: |
+        VALID_BRANCHES=("istoreos-22.03" "istoreos-23.05" "istoreos-24.10")
+        if [[ ! " ${VALID_BRANCHES[@]} " =~ " ${{ github.event.inputs.repo_branch }} " ]]; then
+          echo "错误：repo_branch 必须是以下值之一: ${VALID_BRANCHES[*]}"
+          exit 1
+        fi
     - name: 验证输入参数
       run: |
         # 动态设置DIY脚本路径
