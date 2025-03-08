@@ -121,9 +121,6 @@ cp -rf ../../kiddin9/luci-app-onliner/* luci-app-onliner
 #svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-eqos
 #Wolplus（已有Wol）
 # svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-wolplus
-#WiFischedule
-mkdir luci-app-wifischedule
-cp -rf ../../kiddin9/luci-app-wifischedule/* luci-app-wifischedule
 #RAMfree
 mkdir luci-app-ramfree
 cp -rf ../../kiddin9/luci-app-ramfree/* luci-app-ramfree
@@ -182,15 +179,15 @@ mkdir luci-app-openclash
 cp -rf ../../kiddin9/luci-app-openclash/* luci-app-openclash
 cp -rf ../../MyConfig/configs/istoreos/general/applications/luci-app-openclash/* luci-app-openclash
 #加入OpenClash核心
-chmod -R a+x $GITHUB_WORKSPACE/scripts/istoreos-22.03/preset-clash-core.sh
+chmod -R a+x $GITHUB_WORKSPACE/scripts/preset-clash-core.sh
 if [ "$1" = "rk33xx" ]; then
-    $GITHUB_WORKSPACE/scripts/istoreos-22.03/preset-clash-core.sh arm64
+    $GITHUB_WORKSPACE/scripts/preset-clash-core.sh arm64
 elif [ "$1" = "rk35xx" ]; then
-    $GITHUB_WORKSPACE/scripts/istoreos-22.03/preset-clash-core.sh arm64
+    $GITHUB_WORKSPACE/scripts/preset-clash-core.sh arm64
 elif [ "$1" = "phicomm-n1" ]; then
-    $GITHUB_WORKSPACE/scripts/istoreos-22.03/preset-clash-core.sh arm64
+    $GITHUB_WORKSPACE/scripts/preset-clash-core.sh arm64
 elif [ "$1" = "x86" ]; then
-    $GITHUB_WORKSPACE/scripts/istoreos-22.03/preset-clash-core.sh amd64
+    $GITHUB_WORKSPACE/scripts/preset-clash-core.sh amd64
 fi
 
 # 去广告
