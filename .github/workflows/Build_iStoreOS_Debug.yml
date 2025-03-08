@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       repo_branch:
-        description: 'iStoreOS 仓库分支（可选值：istoreos-22.03, istoreos-23.05, istoreos-24.10）'
+        description: 'iStoreOS 仓库分支:'
         required: true
         default: 'istoreos-22.03'
       lan_ip:
