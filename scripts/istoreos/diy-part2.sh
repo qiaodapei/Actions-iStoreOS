@@ -175,7 +175,7 @@ cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
 # svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
 # svn export https://github.com/Siriling/OpenWRT-MyConfig/trunk/configs/istoreos/general/applications/luci-app-openclash temp/luci-app-openclash
 # cp -rf temp/luci-app-openclash/* luci-app-openclash
-mkdir luci-app-openclash
+# mkdir luci-app-openclash
 # cp -rf ../../kiddin9/luci-app-openclash/* luci-app-openclash
 git clone -b master https://github.com/vernesong/OpenClash luci-app-openclash
 cp -rf ../../MyConfig/configs/istoreos/general/applications/luci-app-openclash/* luci-app-openclash
