@@ -131,8 +131,7 @@ cp -rf ../../kiddin9/luci-app-ramfree/* luci-app-ramfree
 mkdir luci-app-usb3disable
 cp -rf ../../kiddin9/luci-app-usb3disable/* luci-app-usb3disable
 #NetData（系统监控）
-mkdir luci-app-netdata
-cp -rf ../../kiddin9/luci-app-netdata/* luci-app-netdata
+git clone --depth 1 --branch master --single-branch --no-checkout https://github.com/muink/luci-app-netdata.git luci-app-netdata
 #rtbwmon（实施流量）
 mkdir luci-app-rtbwmon
 cp -rf ../../kiddin9/luci-app-rtbwmon/* luci-app-rtbwmon
