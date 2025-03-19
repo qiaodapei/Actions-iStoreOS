@@ -302,8 +302,9 @@ CONFIG_PACKAGE_luci-app-eqos=y
 CONFIG_PACKAGE_luci-app-wifischedule=y
 CONFIG_PACKAGE_luci-app-ramfree=y
 # CONFIG_PACKAGE_luci-app-usb3disable=y
-CONFIG_PACKAGE_luci-app-netdata=y
 CONFIG_PACKAGE_luci-app-rtbwmon=y
+CONFIG_PACKAGE_netdata=y
+CONFIG_PACKAGE_luci-app-netdata=y
 
 # 存储相关应用
 # CONFIG_PACKAGE_luci-app-gowebdav=y
